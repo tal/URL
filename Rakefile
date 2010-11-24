@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "url"
-    gem.summary = %Q{TODO: A URL object}
-    gem.description = %Q{TODO: A simple url object to allow for OO based manipulation and usage of a url}
+    gem.summary = %Q{A URL object}
+    gem.description = %Q{A simple url object to allow for OO based manipulation and usage of a url}
     gem.email = "me@tal.by"
     gem.homepage = "http://github.com/talby/url"
     gem.authors = ["Tal Atlas"]
