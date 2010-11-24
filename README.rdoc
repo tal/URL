@@ -2,6 +2,11 @@
 
 A simple url object to allow for object oriented based manipulation and usage of a url
 
+
+=== TODO
+* More Documentation
+* More specs
+
 == Note on Patches/Pull Requests
  
 * Fork the project.
