@@ -1,6 +1,6 @@
 = url
 
-Description goes here.
+A simple url object to allow for object oriented based manipulation and usage of a url
 
 == Note on Patches/Pull Requests
  

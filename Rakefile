@@ -5,13 +5,12 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "url"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "me@talatlas.com"
+    gem.summary = %Q{TODO: A URL object}
+    gem.description = %Q{TODO: A simple url object to allow for OO based manipulation and usage of a url}
+    gem.email = "me@tal.by"
     gem.homepage = "http://github.com/talby/url"
     gem.authors = ["Tal Atlas"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
