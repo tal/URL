@@ -2,8 +2,26 @@
 
 A simple url object to allow for object oriented based manipulation and usage of a url
 
+== Usage
 
-=== TODO
+=== Basic Usage
+
+You can easily extract or change any part of the url
+
+  url = URL.new('https://mail.google.com/mail/?shva=1#mbox')
+  url.params # => {:shva => '1'}
+  url.scheme # => 'https'
+  url.host   # => 'mail.google.com'
+  url.domain # => 'google.com'
+  url.subdomain # => ['mail']
+  url.path   # => '/mail/'
+  url.hash   # => 'mbox'
+  
+  url.subdomain = ['my','mail']
+  url.params[:foo] = 'bar'
+  url.to_s   # => 'https://my.mail.google.com/mail/?foo=bar&shva=1#mbox'
+
+== TODO
 * More Documentation
 * More specs
 

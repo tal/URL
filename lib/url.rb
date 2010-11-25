@@ -55,6 +55,8 @@ class URL
   end
   
   # Outputs the full current url
+  # @param [Hash<Symbol,false>,#whatever] ops Prevent certain parts of the object from being shown by setting `:scheme`,`:port`,`:path`,`:params`, or `:hash` to `false`
+  # @return [String]
   def to_s ops={}
     ret = String.new
     ret << %{#{scheme}://} if scheme && ops[:scheme] != false
@@ -73,6 +75,7 @@ class URL
   end
   
   # Returns the parsed URI object for the string
+  # @return [URI]
   def to_uri
     URI.parse(to_s)
   end
@@ -86,24 +89,31 @@ class URL
   end
   
   # Performs a get request for the current URL
+  # @return [URL::Response] A subclass of string which also repsonds to a few added mthods storing more information
   def get(*args)
     req_handler.get(*args)
   end
   
   # Performs a post request for the current URL
+  # @return [URL::Response] A subclass of string which also repsonds to a few added mthods storing more information
   def post(*args)
     req_handler.post(*args)
   end
   
   # Performs a delete request for the current URL
+  # @return [URL::Response] A subclass of string which also repsonds to a few added mthods storing more information
   def delete(*args)
     req_handler.delete(*args)
   end
   
+  def inspect #:nodoc:
+    "#<URL #{to_s}>"
+  end
+  
   if defined?(Typhoeus)
-    self.req_handler = TyHandler
+    URL.req_handler = TyHandler
   else
-    self.req_handler = NetHandler
+    URL.req_handler = NetHandler
   end
 end
 

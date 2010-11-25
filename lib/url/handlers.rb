@@ -1,13 +1,13 @@
 class URL
   
-  class Handler #:nodoc: all
+  class Handler
     attr_reader :url
     def initialize(url)
       @url = url
     end
   end
   
-  class TyHandler < Handler #:nodoc: all
+  class TyHandler < Handler
     
     def get(args={})
       resp = Typhoeus::Request.get(url.to_s)
@@ -42,7 +42,7 @@ class URL
     
   end
   
-  class NetHandler < Handler #:nodoc: all
+  class NetHandler < Handler
     def get(args={})
       puts 'net'
       http = http_obj

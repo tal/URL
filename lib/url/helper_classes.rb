@@ -2,7 +2,14 @@ require "delegate"
 
 class URL
   
-  class Response < DelegateClass(String) #:nodoc: all
+  # The Response class is a deleegate to string which also contains metadata about the request.
+  # These methods are also available
+  # * body
+  # * code - http code
+  # * response - the original response object from whatever handler you chose
+  # * time - time taken to make call
+  # * success? - whether the http code is 200
+  class Response < DelegateClass(String)
     attr_reader :body,:time,:code,:response
     def initialize(str,args={})
       if str.is_a?(Hash)
