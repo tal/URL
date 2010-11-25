@@ -22,4 +22,3 @@ pkg
 .yardoc/*
 .yard/*
 doc/*
-*.gemspec
