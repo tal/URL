@@ -1,6 +1,7 @@
 = URL Gem
 
-A simple url object to allow for object oriented based manipulation and usage of a url
+A simple url object to allow for object oriented based manipulation and usage of a url. It works with Typhoeus if it detects it's installed
+or defaults back to Net::HTTP.
 
 == Usage
 
@@ -21,9 +22,40 @@ You can easily extract or change any part of the url
   url.params[:foo] = 'bar'
   url.to_s   # => 'https://my.mail.google.com/mail/?foo=bar&shva=1#mbox'
 
+=== Make Requests
+
+You can quickly and easily make requests from those urls without having to worry about whether they're https or not.
+
+  url = URL.new('https://graph.facebook.com/37901410')
+  response = url.get
+  response # => "{"id":"37901410","name":"Tal Atlas","first_name":"Tal","last_name":"Atlas","link":"http:\\/\\/www.facebook.com\\/talatlas","gender":"male","locale":"en_US"}"
+
+A {URL::Response} object is returned from {URL#post}, {URL#get}, or {URL#delete}. This is basically a string with a few additional methods including:
+
+The time the request took in seconds
+The http code of the response and whether the request was successful or not (code == 200).
+
+  response.time     # => 1.6
+  response.code     # => 200
+  response.success? # => true
+
+You can make GET, POST, or DELETE requests without doing any special formatting.
+
+  url.path << '/feed'
+  url.params[:access_token] = '.....'
+  url.params[:message] = "Hey I'm posting this message with ruby"
+  json = url.post
+  
+  post_id = magic_method(json)
+  
+  url.path = "/#{post_id}"
+  url.params.delete(:message)
+  url.delete
+
 == TODO
 * More Documentation
 * More specs
+* Make faster
 
 == Note on Patches/Pull Requests
  

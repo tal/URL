@@ -1,5 +1,18 @@
 class URL
   
+  # Handlers for making requests for the URL. To create your own you need to follow the following conventions:
+  # 1. You must define the get, post, and delete instance methods
+  # 2. These methods should return a {Response} object
+  # 
+  # To create a {Response} object:
+  #   hsh = {
+  #     :code => resp.code,
+  #     :time => resp.time,
+  #     :body => resp.body,
+  #     :response => resp,
+  #     :url => url.to_s
+  #   }
+  #   Response.new(hsh)
   class Handler
     attr_reader :url
     def initialize(url)
@@ -7,6 +20,7 @@ class URL
     end
   end
   
+  # Typhoeus handler
   class TyHandler < Handler
     
     def get(args={})
@@ -42,9 +56,9 @@ class URL
     
   end
   
+  # Net::HTTP Handler
   class NetHandler < Handler
     def get(args={})
-      puts 'net'
       http = http_obj
       request = Net::HTTP::Get.new(url.path + url.params.to_s)
       t = Time.now

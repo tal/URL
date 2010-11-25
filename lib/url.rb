@@ -6,12 +6,28 @@ require 'cgi'
 files = Dir.glob(File.join(File.dirname(__FILE__),'url','**','*.rb'))
 files.each { |f| require f }
 
-#:include: README.rdoc
+# Main class for managing urls
+#   url = URL.new('https://mail.google.com/mail/?shva=1#mbox')
+#   url.params # => {:shva => '1'}
+#   url.scheme # => 'https'
+#   url.host   # => 'mail.google.com'
+#   url.domain # => 'google.com'
+#   url.subdomain # => ['mail']
+#   url.path   # => '/mail/'
+#   url.hash   # => 'mbox'
+#   
+#   url.subdomain = ['my','mail']
+#   url.params[:foo] = 'bar'
+#   url.to_s   # => 'https://my.mail.google.com/mail/?foo=bar&shva=1#mbox'
 class URL
   attr_reader :string, :params
+  
+  # Attributes of the URL which are editable
   attr_accessor :subdomain, :domain, :path, :scheme, :format, :port, :hash
   alias_method :subdomains, :subdomain
   
+  # Creates a new URL object
+  # @param [String] URL the starting url to work with
   def initialize str
     @string = str
     sp = URI.split(@string)
@@ -55,7 +71,7 @@ class URL
   end
   
   # Outputs the full current url
-  # @param [Hash<Symbol,false>,#whatever] ops Prevent certain parts of the object from being shown by setting `:scheme`,`:port`,`:path`,`:params`, or `:hash` to `false`
+  # @param [Hash] ops Prevent certain parts of the object from being shown by setting `:scheme`,`:port`,`:path`,`:params`, or `:hash` to `false`
   # @return [String]
   def to_s ops={}
     ret = String.new
@@ -64,7 +80,6 @@ class URL
     ret << %{:#{port}} if port && ops[:port] != false
     if path && ops[:path] != false
       ret << path
-      # ret << %{.#{format}} if format && ops[:format] != false
     end
     
     ret << params.to_s if params && ops[:params] != false
@@ -81,11 +96,9 @@ class URL
   end
   
   class << self
+    # Define the request handler to use. If Typhoeus is setup it will use {TyHandler} otherwise will default back to Net::HTTP with {NetHandler}
+    # @return [Handler]
     attr_accessor :req_handler
-  end
-  
-  def req_handler #:nodoc:
-    self.class.req_handler.new(self)
   end
   
   # Performs a get request for the current URL
@@ -106,7 +119,7 @@ class URL
     req_handler.delete(*args)
   end
   
-  def inspect #:nodoc:
+  def inspect
     "#<URL #{to_s}>"
   end
   
@@ -114,6 +127,11 @@ class URL
     URL.req_handler = TyHandler
   else
     URL.req_handler = NetHandler
+  end
+  
+private
+  def req_handler
+    self.class.req_handler.new(self)
   end
 end
 
