@@ -53,6 +53,7 @@ You can make GET, POST, or DELETE requests without doing any special formatting.
   url.delete
 
 == TODO
+* Fast Dup method
 * More Documentation
 * More specs
 * Make faster

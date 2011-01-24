@@ -123,6 +123,10 @@ class URL
     "#<URL #{to_s}>"
   end
   
+  def dup
+    URL.new(to_s)
+  end
+  
   if defined?(Typhoeus)
     URL.req_handler = TyHandler
   else
