@@ -10,25 +10,22 @@ begin
     gem.email = "me@tal.by"
     gem.homepage = "http://github.com/talby/url"
     gem.authors = ["Tal Atlas"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "rspec", ">= 2.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end
 
-# begin
-  require 'rspec/core/rake_task'
-  RSpec::Core::RakeTask.new do |t|
-    t.rspec_opts = ["-c", "-f progress", "-r ./spec/spec_helper.rb"]
-    t.pattern = 'spec/**/*_spec.rb'
-  end
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new do |t|
+  t.rspec_opts = ["-c", "-f progress", "-r ./spec/spec_helper.rb"]
+  t.pattern = 'spec/**/*_spec.rb'
+end
 
-  task :spec => :check_dependencies
+task :spec => :check_dependencies
 
-  task :default => :spec
-# rescue Exception => e
-# end
+task :default => :spec
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
