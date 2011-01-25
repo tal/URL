@@ -5,7 +5,7 @@ require 'cgi'
 require 'forwardable'
 
 
-files = Dir.glob(File.join(File.dirname(__FILE__),'url','**','*.rb'))
+files = Dir.glob(File.join(File.dirname(__FILE__),'url','*.rb'))
 files.each { |f| require f }
 
 # Main class for managing urls
@@ -31,20 +31,33 @@ class URL
   
   # Attributes of the URL which are editable
   # @returns [String]
-  attr_accessor :domain, :path, :scheme, :format, :port, :hash
+  attr_accessor :domain, :scheme, :format, :port, :hash
+  
+  # The path for the request
+  # @returns [URL::Path]
+  attr_reader :path
+  
+  # Set the path for the request
+  def path=str
+    if str.nil? || str.empty?
+      str = '/'
+    end
+    
+    @path = str
+  end
   
   # Returns array of subdomains
-  # @returns [Array]
+  # @returns [URL::Subdomain]
   attr_reader :subdomain
   alias_method :subdomains, :subdomain
   
   # @param [Array,String] subdomain An array or string for subdomain
   def subdomain=(s)
     if s.is_a?(String)
-      @subdomain = s.split('.')
-    else
-      @subdomain = s
+      s = s.split('.')
     end
+    
+    @subdomain = s
   end
   alias_method :subdomains=, :subdomain=
   
@@ -55,7 +68,7 @@ class URL
     sp = URI.split(@string)
     @scheme = sp[0]
     @port = sp[3]
-    @path = sp[5]
+    self.path = sp[5]
     @format = @path.gsub(/(.+\.)/,'')
     @hash = sp[8]
     
@@ -76,20 +89,20 @@ class URL
       @domain = nil
       @subdomain = nil
     end
+    
+    @params = ParamsHash.new
     if sp[7]
-      @params = sp[7].gsub('?','').split('&').inject(ParamsHash.new) do |result,param|
-        key,value = param.split('=')
+      sp[7].gsub('?','').split('&').each do |myp|
+        key,value = myp.split('=')
         value = CGI.unescape(value) if value
-        result[key.to_sym] = value if key
-        result
+        @params[key.to_sym] = value if key
       end
-    else
-      @params = ParamsHash.new
     end
   end
   
   def_delegators :@params, :[], :[]=
   
+  # The full hostname (not including port) for the URL
   def host
     [@subdomain,@domain].flatten.compact.join('.')
   end
@@ -151,15 +164,24 @@ class URL
     URL.new(to_s)
   end
   
-  if defined?(Typhoeus)
-    URL.req_handler = TyHandler
-  else
-    URL.req_handler = NetHandler
+  # The request handler for this 
+  # @return [Handler]
+  def req_handler
+    (@req_handler||self.class.req_handler).new(self)
   end
   
-private
-  def req_handler
-    self.class.req_handler.new(self)
+  # Sets the handler to use for this request
+  # @param [Handler]
+  # @return [Handler]
+  def req_handler=r
+    raise ArgumentError, 'Must be a subclass of URL::Handler' unless r < Handler
+    @req_handler = r
+  end
+  
+  if defined?(Typhoeus)
+    URL.req_handler = URL::TyHandler
+  else
+    URL.req_handler = URL::NetHandler
   end
 end
 

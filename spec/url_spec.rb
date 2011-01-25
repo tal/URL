@@ -28,7 +28,11 @@ describe URL do
   
   describe '#to_s' do
     it "should roundtrip" do
-      @url.to_s.should == 'https://mail.google.com:8080/foo/bar/baz?q=one&foo=bar'
+      s = @url.to_s
+      s.should include 'https://mail.google.com:8080/foo/bar/baz?'
+      s.should include 'q=one'
+      s.should include 'foo=bar'
+      s.should include '&'
     end
     
     it "should change and add params" do
@@ -46,73 +50,31 @@ describe URL do
     end
   end
   
-end
-
-shared_examples_for "all requests" do
-  it "should work" do
-    @resp.should be_success
+  
+  it "should should modify params easily" do
+    @url[:foo] = '123'
+    @url['foo'].should == '123'
+    @url.to_s.should include('foo=123')
+    
+    @url['foo'] = '345'
+    @url[:foo].should == '345'
+    @url.to_s.should include('foo=345')
   end
   
-  it "should have a response of the correct class" do
-    @resp.response.should be_a(@resp_class)
+  it "should should accept arbitrary req handlers" do
+    class TestReq < URL::TyHandler; end
+    @url.req_handler = TestReq
+    @url.req_handler.should be_a(URL::RequestHandler)
+    @url.req_handler.should be_instance_of(TestReq)
   end
   
-  it "shoudl have all attribures" do
-    @resp.time.should be_a(Float)
-    @resp.code.should be_a(Integer)
-    @resp.url.should be_a(String)
+  it "should should make sure there's always a path" do
+    @url.path = nil
+    @url.path.should == '/'
+    
+    @url.path = ''
+    @url.path.should == '/'
   end
-end
-
-shared_examples_for "all builds" do
-  
-  
-  before do
-    @url = URL.new('http://www.omgpop.com')
-  end
-  
-  describe "#get" do
-    before do
-      @resp = @url.get
-    end
-    it_should_behave_like "all requests"
-  end
-  
-  describe "#post" do
-    before do
-      @resp = @url.post
-    end
-    it_should_behave_like "all requests"
-  end
-  
-  describe "#delete" do
-    before do
-      @resp = @url.delete
-    end
-    it_should_behave_like "all requests"
-  end
-end
-
-describe "Typhoeus", URL do
-  before(:all) do
-    require 'typhoeus'
-    URL.req_handler = URL::TyHandler
-    @resp_class = Typhoeus::Response
-  end
-  
-  it_should_behave_like "all builds"
-  
-end
-
-
-describe "Net::HTTP", URL do
-  before(:all) do
-    require 'net/http'
-    URL.req_handler = URL::NetHandler
-    @resp_class = Net::HTTPResponse
-  end\
-  
-  it_should_behave_like "all builds"
   
 end
 
@@ -140,10 +102,12 @@ describe URL::ParamsHash, '#to_s' do
     
     str.should include CGI.escape('hash[one]')+'=1'
     str.should include CGI.escape('hash[two]')+'=2'
-    str.should include CGI.escape('test[]')+'=1'+CGI.escape('test[]')+'=2'+CGI.escape('test[]')+'=3'
+    str.should include CGI.escape('test[]')+'=1'
+    str.should include CGI.escape('test[]')+'=2'
+    str.should include CGI.escape('test[]')+'=3'
   end
   
-  it "should recursively make make objects" do
+  it "should recursively make objects" do
     pending('implementation')
     hsh = URL::ParamsHash.new
     
@@ -152,7 +116,9 @@ describe URL::ParamsHash, '#to_s' do
     
     str = hsh.to_s
     
-    str.should include CGI.escape('test[][foo]')+'=bar&'+CGI.escape('test[][bar]')+'=baz&'+CGI.escape('test[][foo]')+'=baz'
+    str.should include CGI.escape('test[][foo]')+'=bar'
+    str.should include CGI.escape('test[][bar]')+'=baz'
+    str.should include CGI.escape('test[][foo]')+'=baz'
     str.should include CGI.escape('hash[one][o]')+'=1'
     str.should include CGI.escape('hash[two]')+'=2'
   end

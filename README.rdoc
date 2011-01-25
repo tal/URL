@@ -33,7 +33,7 @@ You can quickly and easily make requests from those urls without having to worry
 A {URL::Response} object is returned from {URL#post}, {URL#get}, or {URL#delete}. This is basically a string with a few additional methods including:
 
 The time the request took in seconds
-The http code of the response and whether the request was successful or not (code == 200).
+The http code of the response and whether the request was successful or not (code == 2xx).
 
   response.time     # => 1.6
   response.code     # => 200

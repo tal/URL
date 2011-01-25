@@ -8,7 +8,7 @@ class URL
   # * code - http code
   # * response - the original response object from whatever handler you chose
   # * time - time taken to make call
-  # * success? - whether the http code is 200
+  # * success? - whether the http code is 2xx
   # * url - the URL the object was gotten from
   class Response < DelegateClass(String)
     # The time taken for the request
@@ -42,24 +42,31 @@ class URL
       end
     end
     
-    # Compares {Response#code} to 200
+    # Compares {Response#code} to 2xx
     # @returns [true,false]
     def success?
       return @successful if @successful
       
-      code == 200
+      (200..299).include?(code)
     end
   end
   
-  class Subdomain < Array
+  # A hash where all keys are symbols
+  class Mash < Hash
+    # Set the value of a param
+    def []=(k,v)
+      k = k.to_s.to_sym unless k.is_a?(Symbol)
+      super(k,v)
+    end
     
+    # Read the value of a param
+    def [](k)
+      k = k.to_s.to_sym unless k.is_a?(Symbol)
+      super(k)
+    end
   end
   
-  class Path < String
-    
-  end
-  
-  class ParamsHash < Hash
+  class ParamsHash < Mash
     
     # Merges the array into a parameter string of the form <tt>?key=value&foo=bar</tt>
     def to_s
