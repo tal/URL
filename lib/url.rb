@@ -2,6 +2,8 @@ require "net/http"
 require "net/https"
 require 'uri'
 require 'cgi'
+require 'forwardable'
+
 
 files = Dir.glob(File.join(File.dirname(__FILE__),'url','**','*.rb'))
 files.each { |f| require f }
@@ -20,11 +22,31 @@ files.each { |f| require f }
 #   url.params[:foo] = 'bar'
 #   url.to_s   # => 'https://my.mail.google.com/mail/?foo=bar&shva=1#mbox'
 class URL
-  attr_reader :string, :params
+  extend Forwardable
+  attr_reader :string
+  
+  # The params for the request
+  # @returns [URL::ParamsHash]
+  attr_reader :params
   
   # Attributes of the URL which are editable
-  attr_accessor :subdomain, :domain, :path, :scheme, :format, :port, :hash
+  # @returns [String]
+  attr_accessor :domain, :path, :scheme, :format, :port, :hash
+  
+  # Returns array of subdomains
+  # @returns [Array]
+  attr_reader :subdomain
   alias_method :subdomains, :subdomain
+  
+  # @param [Array,String] subdomain An array or string for subdomain
+  def subdomain=(s)
+    if s.is_a?(String)
+      @subdomain = s.split('.')
+    else
+      @subdomain = s
+    end
+  end
+  alias_method :subdomains=, :subdomain=
   
   # Creates a new URL object
   # @param [String] URL the starting url to work with
@@ -65,6 +87,8 @@ class URL
       @params = ParamsHash.new
     end
   end
+  
+  def_delegators :@params, :[], :[]=
   
   def host
     [@subdomain,@domain].flatten.compact.join('.')
