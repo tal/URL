@@ -57,6 +57,8 @@ You can make GET, POST, or DELETE requests without doing any special formatting.
 * More Documentation
 * More specs
 * Make faster
+* JSON support
+* More robust subdomain/path methods
 
 == Note on Patches/Pull Requests
  
