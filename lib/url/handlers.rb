@@ -60,7 +60,7 @@ class URL
   class NetHandler < Handler
     def get(args={})
       http = http_obj
-      request = Net::HTTP::Get.new(url.path + url.params.to_s)
+      request = Net::HTTP::Get.new(make_path + url.params.to_s)
       t = Time.now
       resp = http.request(request)
       make_str(resp,Time.now-t)
@@ -68,7 +68,7 @@ class URL
     
     def post(args={})
       http = http_obj
-      request = Net::HTTP::Post.new(url.path)
+      request = Net::HTTP::Post.new(make_path)
       request.set_form_data(url.params)
       t = Time.now
       resp = http.request(request)
@@ -77,13 +77,17 @@ class URL
     
     def delete(args={})
       http = http_obj
-      request = Net::HTTP::Delete.new(url.path + url.params.to_s)
+      request = Net::HTTP::Delete.new(make_path + url.params.to_s)
       t = Time.now
       resp = http.request(request)
       make_str(resp,Time.now-t)
     end
     
   private
+  
+    def make_path
+      '/' if url.path.empty?
+    end
     
     def make_str(resp,time)
       hsh = {

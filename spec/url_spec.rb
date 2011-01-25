@@ -68,7 +68,7 @@ shared_examples_for "all builds" do
   
   
   before do
-    @url = URL.new('http://www.omgpop.com/')
+    @url = URL.new('http://www.omgpop.com')
   end
   
   describe "#get" do
@@ -114,4 +114,46 @@ describe "Net::HTTP", URL do
   
   it_should_behave_like "all builds"
   
+end
+
+describe URL::ParamsHash, '#to_s' do
+  it "should make a param string" do
+    hsh = URL::ParamsHash.new
+    
+    hsh[:foo] = 'bar'
+    hsh[1] = 2
+    
+    str = hsh.to_s
+    
+    # str.should match(/^?/)
+    str.should include('foo=bar')
+    str.should include('1=2')
+  end
+  
+  it "should make a param string with an array or hash" do
+    hsh = URL::ParamsHash.new
+    
+    hsh[:test] = [*1..3]
+    hsh[:hash] = {:one => 1, :two => 2}
+    
+    str = hsh.to_s
+    
+    str.should include CGI.escape('hash[one]')+'=1'
+    str.should include CGI.escape('hash[two]')+'=2'
+    str.should include CGI.escape('test[]')+'=1'+CGI.escape('test[]')+'=2'+CGI.escape('test[]')+'=3'
+  end
+  
+  it "should recursively make make objects" do
+    pending('implementation')
+    hsh = URL::ParamsHash.new
+    
+    hsh[:test] = [{:foo => 'bar', :bar => 'baz'},{:foo => 'baz'}]
+    hsh[:hash] = {:one => {'o' => 1}, :two => 2}
+    
+    str = hsh.to_s
+    
+    str.should include CGI.escape('test[][foo]')+'=bar&'+CGI.escape('test[][bar]')+'=baz&'+CGI.escape('test[][foo]')+'=baz'
+    str.should include CGI.escape('hash[one][o]')+'=1'
+    str.should include CGI.escape('hash[two]')+'=2'
+  end
 end
