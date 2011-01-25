@@ -51,6 +51,14 @@ class URL
     end
   end
   
+  class Subdomain < Array
+    
+  end
+  
+  class Path < String
+    
+  end
+  
   class ParamsHash < Hash
     
     # Merges the array into a parameter string of the form <tt>?key=value&foo=bar</tt>
