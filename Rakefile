@@ -10,7 +10,7 @@ begin
     gem.email = "me@tal.by"
     gem.homepage = "http://github.com/talby/url"
     gem.authors = ["Tal Atlas"]
-    gem.add_development_dependency "rspec", ">= 2.0"
+    gem.add_development_dependency "rspec", "~> 2.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
