@@ -1,12 +1,5 @@
 class URL
   
-  class Handler
-    attr_reader :url
-    def initialize(url)
-      @url = url
-    end
-  end
-  
   # Handlers for making requests for the URL. To create your own you need to follow the following conventions:
   # 1. You must define the get, post, and delete instance methods
   # 2. These methods should return a {Response} object
@@ -20,7 +13,12 @@ class URL
   #     :url => url.to_s
   #   }
   #   Response.new(hsh)
-  class RequestHandler < Handler
+  class RequestHandler
+    attr_reader :url
+    def initialize(url)
+      @url = url
+    end
+    
     def get(args={})
       raise Exception, "You need to implement #{self.class}#get"
     end
@@ -32,6 +30,18 @@ class URL
     def delete(args={})
       raise Exception, "You need to implement #{self.class}#delete"
     end
+  end
+  
+  class JSONHandler
+    attr_reader :str
+    def initialize(str)
+      @str = str
+    end
+    
+    def parse
+      raise Exception, "You need to implement #{self.class}#parse"
+    end
+    
   end
   
 end
