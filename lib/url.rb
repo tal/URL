@@ -6,6 +6,7 @@ require 'forwardable'
 
 
 files = Dir.glob(File.join(File.dirname(__FILE__),'url','*.rb'))
+files.delete_if {|f| f =~ /url\/(classer)\.rb/}
 files.each { |f| require f }
 
 # Main class for managing urls
@@ -157,7 +158,7 @@ class URL
   end
   
   def inspect
-    "#<URL #{to_s}>"
+    "#<#{self.class} #{to_s}>"
   end
   
   def dup
