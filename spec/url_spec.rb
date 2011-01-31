@@ -76,6 +76,10 @@ describe URL do
     @url.path.should == '/'
   end
   
+  it "should match =~" do
+    (@url =~ /mail\.google\.com/).should == (@url.to_s =~ /mail\.google\.com/)
+  end
+  
 end
 
 describe URL::ParamsHash, '#to_s' do

@@ -170,6 +170,10 @@ class URL
     (@req_handler||self.class.req_handler).new(self)
   end
   
+  def =~ reg
+    to_s =~ reg
+  end
+  
   # Sets the handler to use for this request
   # @param [Handler]
   # @return [Handler]
