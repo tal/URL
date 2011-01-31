@@ -134,8 +134,41 @@ class URL
   
   class << self
     # Define the request handler to use. If Typhoeus is setup it will use {TyHandler} otherwise will default back to Net::HTTP with {NetHandler}
-    # @return [Handler]
-    attr_accessor :req_handler
+    # @return [RequstHandler]
+    def req_handler
+      return @req_handler if @req_handler
+      
+      if defined?(Typhoeus)
+        URL.req_handler = URL::TyHandler
+      else
+        URL.req_handler = URL::NetHandler
+      end
+    end
+    
+    # Define the request handler to use. If Typhoeus is setup it will use {TyHandler} otherwise will default back to Net::HTTP with {NetHandler}
+    # @param [RequstHandler]
+    # @return [RequstHandler]
+    def req_handler=r
+      raise ArgumentError, 'Must be a subclass of URL::RequestHandler' unless r.nil? || r < RequestHandler
+      @req_handler = r
+    end
+    
+    def json_handler
+      return @json_handler if @json_handler
+      
+      if defined?(Yajl)
+        URL.json_handler = URL::YajlHandler
+      elsif defined?(JSON)
+        URL.json_handler = URL::BaseJSONHandler
+      elsif defined?(ActiveSupport::JSON)
+        URL.json_handler = URL::ASJSONHandler
+      end
+    end
+    
+    def json_handler=r
+      raise ArgumentError, 'Must be a subclass of URL::JSONHandler' unless r.nil? || r < JSONHandler
+      @json_handler = r
+    end
   end
   
   # Performs a get request for the current URL
@@ -175,17 +208,12 @@ class URL
   end
   
   # Sets the handler to use for this request
-  # @param [Handler]
-  # @return [Handler]
+  # @param [RequstHandler]
+  # @return [RequstHandler]
   def req_handler=r
-    raise ArgumentError, 'Must be a subclass of URL::Handler' unless r < Handler
+    raise ArgumentError, 'Must be a subclass of URL::Handler' unless r < RequestHandler
     @req_handler = r
   end
   
-  if defined?(Typhoeus)
-    URL.req_handler = URL::TyHandler
-  else
-    URL.req_handler = URL::NetHandler
-  end
 end
 
