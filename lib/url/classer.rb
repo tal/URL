@@ -1,10 +1,13 @@
 module URL::Classer
+  VAR_MATCHER = /__([A-Za-z]?[A-Za-z_]*[A-Za-z])__/
+  
   module ClassMethods
     def allowed_params
       @allowed_params ||= []
     end
   private
     def allow_changed *args
+      args.flatten!
       def_delegators :@url, :subdomains if args.include?(:subdomain)
       def_delegators :@url, :subdomain  if args.include?(:subdomains)
       def_delegators :@url, :[], :[]=   if args.include?(:params)
@@ -12,7 +15,7 @@ module URL::Classer
     end
     
     def allow_params *args
-      args.each do |arg|
+      args.flatten.each do |arg|
         arg = arg.to_sym
         self.allowed_params << arg
         define_method arg do
@@ -25,17 +28,38 @@ module URL::Classer
       end
     end
     
+    def overrideable_path_val v
+      v = v.to_s.downcase
+      define_method v do
+        @var_map[v]
+      end
+      
+      define_method "#{v}=" do |val|
+        @var_map[v] = val
+        
+        p = self.class.const_get(:URL).path.dup
+        
+        @var_map.each do |key,value|
+          p.gsub!("__#{key}__", value.to_s)
+        end
+        
+        @url.path = p
+        
+        val
+      end
+    end
+    
   end
   
   module InstanceMethods
     def initialize(opts={})
       @url = self.class.const_get(:URL).dup
       
-      opts.delete_if do |k,v|
-        !self.class.allowed_params.include?(k.to_sym)
-      end
+      @var_map = {}
       
-      @url.params.merge!(opts)
+      opts.each do |op,v|
+        send("#{op}=",v)
+      end
     end
     
     def to_s
@@ -61,17 +85,23 @@ module URL::Classer
 end
 
 def URL url
-  klass = Class.new
-  
   if url.is_a?(URL)
     url = url.dup
   else
-    url = URL.new(url)
+    url = ::URL.new(url)
   end
   
-  klass.const_set(:URL, url)
+  klass = Class.new do
+    include URL::Classer
+    
+    vars = url.path.scan(URL::Classer::VAR_MATCHER).flatten
+    
+    vars.each do |var|
+      overrideable_path_val(var)
+    end
+  end
   
-  klass.send(:include, URL::Classer)
+  klass.const_set(:URL, url.freeze)
   
   klass
 end

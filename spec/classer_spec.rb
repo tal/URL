@@ -4,19 +4,18 @@ require 'url/classer'
 describe "URL()" do
   
   before(:all) do
-    class FacebookURL < URL('http://www.facebook.com')
+    class FacebookURL < URL('http://www.facebook.com/__test_me__/foo/__test_again__')
       allow_changed :subdomain
-      allow_params :foo
+      allow_params :foo, :bar
     end
   end
   
   it "should create a class" do
     url = 'http://www.facebook.com'
-    u = URL.new(url)
-    URL(u).should be_a(Class)
+    lambda {class FacebookURL2 < URL(url); end}.should_not raise_error
     
-    URL.should_receive(:new,url).once
-    URL(url).should be_a(Class)
+    FacebookURL2.new.to_s.should == 'http://www.facebook.com/'
+    FacebookURL2.new.should be_a(URL::Classer)
   end
   
   context '.new' do
@@ -24,10 +23,10 @@ describe "URL()" do
     
     it "shoud work like whatever" do
       subject.subdomain << 'us'
-      subject.to_s.should =~ /^http:\/\/www\.us\.facebook.com\/?$/
+      subject.to_s.should =~ /^http:\/\/www\.us\.facebook.com/
     
       u = FacebookURL.new
-      u.to_s.should =~ /^http:\/\/www\.facebook.com\/?$/
+      u.to_s.should =~ /^http:\/\/www\.facebook.com/
     end
   
     it "should dup" do
@@ -44,6 +43,23 @@ describe "URL()" do
       subject.foo = 1
       subject.foo.should == 1
       subject.to_s.should =~ /foo=1/
+    end
+    
+    it "should set vars" do
+      subject.test_me = 'foobar'
+      subject.test_me.should == 'foobar'
+      
+      subject.test_again = 'abc'
+      subject.to_s.should == "http://www.facebook.com/foobar/foo/abc"
+      
+      subject.test_again = 'aaa'
+      subject.to_s.should == "http://www.facebook.com/foobar/foo/aaa"
+    end
+    
+    it "should set vars in create" do
+      u = FacebookURL.new(:test_me => 'foobar', :test_again => 'abc')
+      
+      u.to_s.should == "http://www.facebook.com/foobar/foo/abc"
     end
   end
   
