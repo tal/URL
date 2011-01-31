@@ -51,6 +51,7 @@ class URL
     end
     
     def json
+      raise StandardError, 'No JSON library initialized' unless URL.json_handler
       URL.json_handler.new(self).parse
     end
     

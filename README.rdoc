@@ -52,6 +52,13 @@ You can make GET, POST, or DELETE requests without doing any special formatting.
   url.params.delete(:message)
   url.delete
 
+=== JSON
+
+If you've initialized the Yajl, JSON, or Active Service gems you can call .json on any response object.
+
+  url = URL.new('https://graph.facebook.com/37901410')
+  url.get.json # => => {"name"=>"Tal Atlas", "gender"=>"male", "id"=>"37901410", "last_name"=>"Atlas", "locale"=>"en_US", "link"=>"http://www.facebook.com/talatlas", "first_name"=>"Tal"}
+
 == TODO
 * Fast Dup method
 * More Documentation
