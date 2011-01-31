@@ -59,6 +59,21 @@ If you've initialized the Yajl, JSON, or Active Service gems you can call .json 
   url = URL.new('https://graph.facebook.com/37901410')
   url.get.json # => => {"name"=>"Tal Atlas", "gender"=>"male", "id"=>"37901410", "last_name"=>"Atlas", "locale"=>"en_US", "link"=>"http://www.facebook.com/talatlas", "first_name"=>"Tal"}
 
+=== Make Custom Objects
+
+Make objects designed around specific urls
+
+  class FacebookURL < URL('http://www.facebook.com/__test_me__/foo/__test_again__')
+    allow_changed :subdomain
+    allow_params :foo, :bar
+  end
+
+This will create a FacebookURL object where you can only change the subdomain, the params foo and bar, and the parts of the paths tagged
+test_me and test_again. This object has the getters and setters: subdomain, foo, bar, test_me, and test_again. You can then call .to_s,
+.get, .post, or .delete.
+
+The object has an instance variable defined as @url which is a url object you can manipulate.
+
 == TODO
 * Fast Dup method
 * More Documentation
