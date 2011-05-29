@@ -51,5 +51,18 @@ class URL
         ret
       end.join('&')
     end
+    
+    class << self
+      def from_string str
+        params = URL::ParamsHash.new
+        str.split('&').each do |myp|
+          key,value = myp.split('=')
+          value = CGI.unescape(value) if value
+          params[key.to_sym] = value if key
+        end
+        params
+      end
+    end
+    
   end
 end

@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+include Rake::DSL
 
 begin
   require 'jeweler'
