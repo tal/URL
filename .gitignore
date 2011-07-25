@@ -22,3 +22,5 @@ pkg
 .yardoc/*
 .yard/*
 doc/*
+
+.rvmrc

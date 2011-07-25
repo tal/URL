@@ -49,10 +49,13 @@ class URL
       
       (200..299).include?(code)
     end
+    alias_method :successful?, :success?
     
+    # Attempt to parse the response as json
+    # @returns [Hash]
     def json
       raise StandardError, 'No JSON library initialized' unless URL.json_handler
-      URL.json_handler.new(self).parse
+      @json ||= URL.json_handler.new(self).parse
     end
     
   end

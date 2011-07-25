@@ -8,6 +8,13 @@ describe URL do
     it "should parse json" do
       subject.get.json.should be_a(Hash)
     end
+    
+    it "should cache the json generation" do
+      JSON.should_receive(:parse).once.and_return({})
+      resp = subject.get
+      resp.json
+      resp.json
+    end
   end
   
 end
