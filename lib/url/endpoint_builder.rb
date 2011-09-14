@@ -1,4 +1,3 @@
-# Should probably make this a module instead
 class URL
   class Service
     class EndpointBuilder
@@ -24,6 +23,7 @@ class URL
       # FooService.user(:role => 'admin' ,:user_id => 1) # => get request to http://foo_svc/foobar?role=admin&user_id=1
       # FooService.user.admin(:user_id => 1)             # => get request to http://foo_svc/foobar?role=admin&user_id=1
       def method_missing *args
+        raise "Method missing calling method missing with #{args.first}" if caller.first =~ /^#{__FILE__}:\d+:in `method_missing'$/ # protect against a typo within this function creating a stack overflow
         name = args.shift
         method = args.first.is_a?(Symbol) ? args.shift : :get
         options = args.shift||{}
