@@ -23,7 +23,9 @@ class URL
       # FooService.user(:role => 'admin' ,:user_id => 1) # => get request to http://foo_svc/foobar?role=admin&user_id=1
       # FooService.user.admin(:user_id => 1)             # => get request to http://foo_svc/foobar?role=admin&user_id=1
       def method_missing *args
-        raise "Method missing calling method missing with #{args.first}" if caller.first =~ /^#{__FILE__}:\d+:in `method_missing'$/ # protect against a typo within this function creating a stack overflow
+        if m = caller.first.match(/^(#{__FILE__}:\d+):in `method_missing'$/) # protect against a typo within this function creating a stack overflow
+          raise "Method missing calling itself with #{args.first} in #{m[1]}"
+        end
         name = args.shift
         method = args.first.is_a?(Symbol) ? args.shift : :get
         options = args.shift||{}
