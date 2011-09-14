@@ -1,5 +1,3 @@
-require "delegate"
-
 class URL
   
   # The Response class is a deleegate to string which also contains metadata about the request.
@@ -26,6 +24,10 @@ class URL
     # The url which generated this response
     # @returns [String]
     attr_reader :url
+
+    # The url object used to create the response
+    # @returns [URL]
+    attr_reader :url_obj
     
     # @param [String] body The body of the response object, main string
     # @param [Hash] args Additional arguments: :time,:code,:response,:url

@@ -38,7 +38,8 @@ class URL
         :time => time,
         :body => resp.body,
         :response => resp,
-        :url => url.to_s
+        :url => url.to_s,
+        :url_obj => url
       }
       
       Response.new(hsh)

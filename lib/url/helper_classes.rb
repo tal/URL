@@ -16,7 +16,18 @@ class URL
   end
   
   class ParamsHash < Mash
-    
+    def | other
+      unless other.is_a? ParamsHash
+        other = other.to_hash if other.respond_to?(:to_hash)
+        other = ParamsHash[other]
+      end
+      other.merge(self)
+    end
+
+    def reverse_merge! other
+      replace self|other
+    end
+
     # Merges the array into a parameter string of the form <tt>?key=value&foo=bar</tt>
     def to_s
       return '' if empty?

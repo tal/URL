@@ -3,7 +3,7 @@ require "net/https"
 require 'uri'
 require 'cgi'
 require 'forwardable'
-
+require "delegate"
 
 files = Dir.glob(File.join(File.dirname(__FILE__),'url','*.rb'))
 files.delete_if {|f| f =~ /url\/(classer)\.rb/}
@@ -29,6 +29,14 @@ class URL
   # The params for the request
   # @returns [URL::ParamsHash]
   attr_reader :params
+
+  # Set the params for the request
+  # Allows for url.params |= {:foo => 'bar'}
+  # @returns [URL::ParamsHash]
+  def params= p
+    raise ArgumentError, 'Params must be a URL::ParamsHash' unless p.is_a?(ParamsHash)
+    @params = p
+  end
   
   # Attributes of the URL which are editable
   # @returns [String]
@@ -45,6 +53,15 @@ class URL
     end
     
     @path = str
+  end
+
+  def add_to_path val
+    unless @path[-1] == 47 # '/'
+      @path << '/'
+    end
+
+    @path << val.sub(/^\//,'')
+    @path
   end
   
   # Returns array of subdomains
@@ -187,6 +204,12 @@ class URL
   # Performs a delete request for the current URL
   # @return [URL::Response] A subclass of string which also repsonds to a few added mthods storing more information
   def delete(*args)
+    req_handler.delete(*args)
+  end
+
+  # Performs a put request for the current URL
+  # @return [URL::Response] A subclass of string which also repsonds to a few added mthods storing more information
+  def put(*args)
     req_handler.delete(*args)
   end
   
