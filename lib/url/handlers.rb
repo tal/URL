@@ -32,7 +32,7 @@ class URL
     end
 
     def put(args={})
-      raise Exception, "You need to implement #{self.class}#delete"
+      raise Exception, "You need to implement #{self.class}#put"
     end
   end
   

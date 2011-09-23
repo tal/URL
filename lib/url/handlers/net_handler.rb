@@ -25,6 +25,15 @@ class URL
       resp = http.request(request)
       make_str(resp,Time.now-t)
     end
+
+    def put(args={})
+      http = http_obj
+      request = Net::HTTP::Put.new(make_path)
+      request.body = url.params.to_s(false)
+      t = Time.now
+      resp = http.request(request)
+      make_str(resp,Time.now-t)
+    end
     
   private
   

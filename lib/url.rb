@@ -5,9 +5,13 @@ require 'cgi'
 require 'forwardable'
 require "delegate"
 
-files = Dir.glob(File.join(File.dirname(__FILE__),'url','*.rb'))
-files.delete_if {|f| f =~ /url\/(classer)\.rb/}
-files.each { |f| require f }
+files = %w{
+  version
+  helper_classes
+  handlers
+  response
+}
+files.each { |f| require File.join(File.dirname(__FILE__),'url',f) }
 
 # Main class for managing urls
 #   url = URL.new('https://mail.google.com/mail/?shva=1#mbox')

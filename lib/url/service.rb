@@ -1,7 +1,14 @@
+%w{
+  accepts_endpoint
+  endpoint
+  endpoint_builder
+}.each { |f| require File.join(File.dirname(__FILE__),f) }
+
 class URL::Service
   INHERITED_INSTANCE_VARIABLES = {:@base_url=>:dup}
-
+  extend AcceptsEndpoint
   class << self
+    attr_accessor :config
     def set_url url
       unless url.is_a?(URL)
         url = URL.new(url)
@@ -12,6 +19,21 @@ class URL::Service
 
     def inherited(subclass)
       super
+
+
+      if defined?(Rails) && File.exist?(Rails.root+'config/services.yml')
+        self.config ||= YAML.load_file(Rails.root+'config/services.yml')[Rails.env] rescue nil
+
+        if config
+          target_name = subclass.to_s.demodulize.underscore
+          service_url = config[target_name]||config[target_name.sub(/_service$/,'')]
+        end
+      end
+
+      if service_url
+        subclass.set_url service_url
+      end
+
       ivs = subclass.instance_variables.collect{|x| x.to_s}
       INHERITED_INSTANCE_VARIABLES.each do |iv,dup|
         next if ivs.include?(iv.to_s)
@@ -21,37 +43,9 @@ class URL::Service
       end
     end
 
-    def endpoint arg, &blk
-      endpoint = if arg.is_a?(Hash)
-        f = arg.first
-        name = f.shift
-        f.shift
-      else
-        name = arg
-      end
-
-      builder = EndpointBuilder.new(@base_url,endpoint,&blk)
-
-      e = builder.endpoint
-
-      instance_variable_set "@#{name}_endpoint",e
-      eigenclass.send :attr_reader, "#{name}_endpoint"
-      instance_eval <<-RUBY
-        def #{name} params=nil, args={}
-          if params.nil?
-            @#{name}_endpoint
-          else
-            @#{name}_endpoint.get(params,args)
-          end
-        end
-      RUBY
-    end
-
-    def eigenclass
-      class << self; self; end
-    end
-
   end
+
+  class RequiredParameter < RuntimeError; end
 end
 
 class << URL

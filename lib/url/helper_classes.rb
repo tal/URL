@@ -29,9 +29,10 @@ class URL
     end
 
     # Merges the array into a parameter string of the form <tt>?key=value&foo=bar</tt>
-    def to_s
+    def to_s(questionmark=true)
       return '' if empty?
-      '?' + to_a.inject(Array.new) do |ret,param|
+      str = questionmark ? '?' : ''
+      str << to_a.inject(Array.new) do |ret,param|
         key = param[0].to_s
         val = param[1]
         
@@ -61,6 +62,7 @@ class URL
         end
         ret
       end.join('&')
+      str
     end
     
     class << self
