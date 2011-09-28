@@ -128,6 +128,11 @@ class URL
   def host
     [@subdomain,@domain].flatten.compact.join('.')
   end
+
+  # Messed up host/hostname issue :(
+  def host_with_port
+    host<<':'<<port.to_s
+  end
   
   # Outputs the full current url
   # @param [Hash] ops Prevent certain parts of the object from being shown by setting `:scheme`,`:port`,`:path`,`:params`, or `:hash` to `false`

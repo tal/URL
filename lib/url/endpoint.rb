@@ -4,6 +4,7 @@ class URL
       attr_accessor :inflate_into
       include AcceptsEndpoint
 
+      # Storage for what each endpoint should inflate into
       def method_inflate_into
         @method_inflate_into ||= {}
       end
@@ -40,6 +41,7 @@ class URL
         @base_url = @url = url
       end
 
+      # Expose class eval externally
       def class_eval *args,&blk
         eigenclass.class_eval *args,&blk
       end
@@ -55,8 +57,20 @@ class URL
     private
       
       def transform_response resp, into=nil
-        resp = resp ? resp.json : nil
-        if into ||= inflate_into
+        if resp.connection_refused
+          raise EndpointNotResponding, resp.url_obj.host_with_port
+        end
+
+        if resp && !resp.empty?
+          begin
+            resp = resp.json
+          rescue Exception => e
+            warn "The response #{resp} couldn't be parsed"
+            raise e
+          end
+        end
+        
+        if into ||= inflate_into && resp.is_a?(Hash)
           into.call(resp)
         else
           resp
@@ -66,6 +80,9 @@ class URL
       class << self
         
       end
+
+      class RequiredParameter < RuntimeError; end
+      class EndpointNotResponding < Errno::ECONNREFUSED; end
     end
   end
 end

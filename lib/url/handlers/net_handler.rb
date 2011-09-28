@@ -7,6 +7,8 @@ class URL
       t = Time.now
       resp = http.request(request)
       make_str(resp,Time.now-t)
+    rescue Errno::ECONNREFUSED => e
+      make_error
     end
     
     def post(args={})
@@ -16,6 +18,8 @@ class URL
       t = Time.now
       resp = http.request(request)
       make_str(resp,Time.now-t)
+    rescue Errno::ECONNREFUSED => e
+      make_error
     end
     
     def delete(args={})
@@ -24,6 +28,8 @@ class URL
       t = Time.now
       resp = http.request(request)
       make_str(resp,Time.now-t)
+    rescue Errno::ECONNREFUSED => e
+      make_error
     end
 
     def put(args={})
@@ -33,12 +39,25 @@ class URL
       t = Time.now
       resp = http.request(request)
       make_str(resp,Time.now-t)
+    rescue Errno::ECONNREFUSED => e
+      make_error
     end
     
   private
   
     def make_path
       url.path
+    end
+
+    def make_error
+      hsh = {
+        :code => 0,
+        :url => url.to_s,
+        :url_obj => url,
+        :connection_refused => true
+      }
+
+      Response.new('',hsh)
     end
     
     def make_str(resp,time)

@@ -45,7 +45,6 @@ class URL::Service
 
   end
 
-  class RequiredParameter < RuntimeError; end
 end
 
 class << URL
