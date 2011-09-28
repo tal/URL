@@ -1,5 +1,3 @@
-require "delegate"
-
 class URL
   
   # The Response class is a deleegate to string which also contains metadata about the request.
@@ -26,6 +24,16 @@ class URL
     # The url which generated this response
     # @returns [String]
     attr_reader :url
+
+    # The url object used to create the response
+    # @returns [URL]
+    attr_reader :url_obj
+
+    # This is set to true if the target server was not reachable
+    # @returns [Boolean]
+    def connection_refused
+      @connection_refused || code == 0
+    end
     
     # @param [String] body The body of the response object, main string
     # @param [Hash] args Additional arguments: :time,:code,:response,:url
@@ -35,7 +43,7 @@ class URL
         str = args[:body]
       end
       
-      raise unless str
+      raise ArgumentError, "No string provided" unless str
       super(str)
       args.each do |key, value|
         instance_variable_set "@#{key}", value

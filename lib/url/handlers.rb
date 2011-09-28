@@ -30,6 +30,10 @@ class URL
     def delete(args={})
       raise Exception, "You need to implement #{self.class}#delete"
     end
+
+    def put(args={})
+      raise Exception, "You need to implement #{self.class}#put"
+    end
   end
   
   class JSONHandler

@@ -16,11 +16,23 @@ class URL
   end
   
   class ParamsHash < Mash
-    
+    def | other
+      unless other.is_a? ParamsHash
+        other = other.to_hash if other.respond_to?(:to_hash)
+        other = ParamsHash[other]
+      end
+      other.merge(self)
+    end
+
+    def reverse_merge! other
+      replace self|other
+    end
+
     # Merges the array into a parameter string of the form <tt>?key=value&foo=bar</tt>
-    def to_s
+    def to_s(questionmark=true)
       return '' if empty?
-      '?' + to_a.inject(Array.new) do |ret,param|
+      str = questionmark ? '?' : ''
+      str << to_a.inject(Array.new) do |ret,param|
         key = param[0].to_s
         val = param[1]
         
@@ -50,6 +62,7 @@ class URL
         end
         ret
       end.join('&')
+      str
     end
     
     class << self

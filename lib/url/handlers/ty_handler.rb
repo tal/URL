@@ -18,6 +18,16 @@ class URL
       resp = Typhoeus::Request.delete(url.to_s)
       make_str(resp)
     end
+
+    def put(args={})
+      resp = Typhoeus::Request.put(url.to_s, :body => url.params.to_s(false))
+      make_str(resp)
+    end
+
+    def head(args={})
+      resp = Typhoesu::Request.head(url.to_s)
+      make_str(resp)
+    end
     
   private
     
@@ -27,7 +37,8 @@ class URL
         :time => resp.time,
         :body => resp.body,
         :response => resp,
-        :url => url.to_s
+        :url => url.to_s,
+        :url_obj => url
       }
       
       Response.new(hsh)
