@@ -70,7 +70,7 @@ class URL
           end
         end
         
-        if into ||= inflate_into && resp.is_a?(Hash)
+        if resp.is_a?(Hash) && (into ||= inflate_into)
           into.call(resp)
         else
           resp

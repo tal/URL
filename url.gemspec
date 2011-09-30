@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.summary = %q{A URL object}
   s.add_development_dependency(%q<rspec>, ["~> 2"])
+  s.add_development_dependency(%q<rake>)
   s.add_development_dependency(%q<yard>, [">= 0.7.1"])
 end
 
