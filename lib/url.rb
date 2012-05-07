@@ -96,7 +96,7 @@ class URL
     
     if sp[2]
       host_parts = sp[2].split('.')
-      if host_parts[-2] == 'co'
+      if host_parts[-2] == 'co' and host_parts.length > 2
         @domain = host_parts[-3,3].join('.')
         @subdomain = host_parts.first(host_parts.length-3)
       else
